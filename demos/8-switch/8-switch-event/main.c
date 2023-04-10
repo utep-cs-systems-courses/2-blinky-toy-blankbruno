@@ -23,12 +23,12 @@ void main(void)
   or_sr(0x18);  // CPU off, GIE on
 } 
 
-void up_event(){
+up_event(){
   P1OUT |= LED_RED;
   P1OUT &= ~LED_GREEN;
 }
 
-void down_event(){
+down_event(){
   P1OUT |= LED_GREEN;
   P1OUT &= ~LED_RED;
 }

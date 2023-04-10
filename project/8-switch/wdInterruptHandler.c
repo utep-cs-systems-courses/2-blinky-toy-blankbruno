@@ -1,0 +1,16 @@
+#include <msp430.h>
+#include "machinaEstato.h"
+
+void __interrupt_vec(WDT_VECTOR) WDT(){
+  static char blinky_county = 0;
+  
+  if (++blinky_county == 125){
+    sm_slow_clock();
+    blinky_county = 0;
+  }
+
+  sm_fast_clock();
+  sm_update_led();
+
+  led_update();
+}

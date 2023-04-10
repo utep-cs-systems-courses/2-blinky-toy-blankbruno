@@ -1,0 +1,65 @@
+#include <msp430.h>
+#include "estatoMachina.h"
+#include "led.h"
+#include "switches.h"
+
+static enum {off = 0, dim = 1, bright = 2} ledMode;
+static char pwmCount = 0;
+
+void sm_slow_clock(){
+  pwmCount = (pwmCount + 1) & 3;
+}
+
+void sm_update_led(){
+  char reddy_on;
+  switch(ledMode){
+  case off: reddy_on = 0; break;
+    
+  case bright: reddy_on = 1; break;
+    
+  case dim: reddy_on = (pwmCount < 1); break;
+  }
+  
+  if (red_on != reddy_on){
+    red_on = reddy_on;
+    led_change = 1;
+  }
+  
+}
+
+char red_toggle(){
+  static char state = 0;
+
+  switch(state){
+  case 0: red_on = 1; state = 1; break;
+    
+  case 1: red_on = 0; state = 0; break;
+    
+  }
+  return 1;
+}
+
+char green_toggle(){
+  char change = 0;
+  
+  if (red_on){
+    green_on ^= 1;
+    change = 1;
+  }
+  
+  return change;
+}
+
+void state_advance(){
+  char change = 0;
+  static enum {R = 0, G = 1} color = G;
+  
+  switch(color){
+  case R: change = red_toggle(); color = G; break;
+      
+  case G: change = green_toggle(); color = R; break;
+  }
+
+  led_change = change;
+  led_update();
+}

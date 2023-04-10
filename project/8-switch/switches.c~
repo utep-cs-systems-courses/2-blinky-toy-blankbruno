@@ -1,0 +1,79 @@
+#include <msp430.h>
+#include "switches.h"
+#include "led.h"
+#include "machinaEstato.h"
+
+short sound;
+char switch_down, period, switch_up;
+
+static char switch_update_interrupt_sense(){
+  char p2val = P2IN;
+  P2IES |= (p2val & SWITCHES);
+  P2IES &= (p2val | ~SWITCHES);
+  return p2val;
+
+}
+
+void switch_init(){
+  P2REN |= SWITCHES;
+  P2IE |= SWITCHES;
+  P2OUT |= SWITCHES;
+  P2DIR &= ~SWITCHES;
+  switch_update_interrupt_sense();
+  switch_interrupt_handler();
+  led_update();
+}
+
+void switch_interrupt_handler(){
+
+  char p2val = switch_update_interrupt_sense();
+  char button_1 = (p2val & SW1) ? 0 : SW1;
+  char button_2 = (p2val & SW2) ? 0 : SW2;
+  char button_3 = (p2val & SW3) ? 0 : SW3;
+  char button_4 = (p2val & SW4) ? 0 : SW4;
+
+  if(button_1){
+    led_state = 0;
+    sound = 2000;
+    period = 20;
+    buzzer_play_sound();
+    led_change = 1;
+    led_advance();
+    led_update();
+    switch_down = 1;
+  }
+  
+  if(button_2){
+    led_state = 0;
+    sound = 4000;
+    period = 40;
+    buzzer_play_sound();
+    led_change = 1;
+    led_advance();
+    led_update();
+    switch_down = 1;
+  }
+  
+  if(button_3){
+    led_state = 0;
+    sound = 6000;
+    period = 60;
+    buzzer_play_sound();
+    led_change = 1;
+    led_advance();
+    led_update();
+    switch_down = 1;
+  }
+  
+  if(button_4){
+    led_state = 0;
+    sound = 2000;
+    period = 20;
+    buzzer_play_sound();
+    led_change = 1;
+    led_advance();
+    led_update();
+    switch_down = 1;
+  }
+
+}
